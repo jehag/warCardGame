@@ -2,6 +2,7 @@
 #include <iostream>
 #include <iterator>
 #include <list>
+#include <random>
 #include "Deck.h"
 
 using namespace std;
@@ -14,4 +15,5 @@ public:
 	int score = 0;
 	void sortPDeck();
 	Card getAndRemoveByIndex(int index);
+	Card getAndRemoveByRandom();
 };

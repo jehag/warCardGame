@@ -31,3 +31,10 @@ Card PlayerDeck::getAndRemoveByIndex(int index)
 	playerDeck.erase(it);
 	return copyCard;
 }
+
+Card PlayerDeck::getAndRemoveByRandom()
+{
+	int size = playerDeck.size();
+	int randNumber = (rand() % size);
+	return getAndRemoveByIndex(randNumber);
+}

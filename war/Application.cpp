@@ -21,8 +21,12 @@
 tuple<double, double> mousePositionClick;
 bool inWindow = false;
 bool DEBUG = false;
-bool contextChange = true;
+bool yo = true;
+int contextNumber = 0;
 int nbCardPlayerHand = 13;
+Card chosenPlayerCard;
+Card chosenComputerCard;
+Engine engine = Engine();
 //list<string> names = {"2_of_clubs", "2_of_diamonds", "2_of_hearts", "2_of_clubs", "2_of_diamonds", "2_of_hearts", "2_of_clubs", "2_of_diamonds", "2_of_hearts", "2_of_clubs", "2_of_diamonds", "2_of_hearts", "2_of_clubs"};
 //list<Texture> textures = {};
 //list<string> names = { "2_of_clubs", "3_of_clubs", "4_of_clubs", "5_of_clubs", "6_of_clubs", "7_of_clubs", "8_of_clubs", "9_of_clubs", "10_of_clubs" };
@@ -36,11 +40,32 @@ static void cursorPositionCallback(GLFWwindow* window, double xpos, double ypos)
 void cursorEnterCallback(GLFWwindow* window, int entered) {
 	inWindow = entered == 1;
 }
+void playerChoseCard() {
+	chosenComputerCard = engine.player2deck.getAndRemoveByRandom();
+	engine.compare(chosenPlayerCard, chosenComputerCard);
+	contextNumber = 1;
+}
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 	if (inWindow && button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 		int cardIndex = getCardIndex(mousePositionClick);
 		//cout << get<0>(mousePositionClick) << " " << get<1>(mousePositionClick) << endl;
-		cout << cardIndex << endl;
+		//cout << cardIndex << endl;
+		if (contextNumber == 0) {
+			//cout << get<0>(mousePositionClick) << " " << get<1>(mousePositionClick) << endl;
+			//cout << cardIndex << endl;
+			if (cardIndex >= engine.player1deck.playerDeck.size()) {
+				return;
+			}
+			chosenPlayerCard = engine.player1deck.getAndRemoveByIndex(cardIndex);
+			playerChoseCard();
+		}
+		else if (contextNumber == 1 && cardIndex == 30) {
+			if (engine.player1deck.playerDeck.size() == 0) {
+				contextNumber = 2;
+				return;
+			}
+			contextNumber = 0;
+		}
 	}
 }
 
@@ -194,6 +219,45 @@ int main(void) {
 
 		Texture cardTextureArray[52] = { texture1, texture2, texture3, texture4, texture5, texture6, texture7, texture8, texture9, texture10, texture11, texture12, texture13, texture14, texture15, texture16, texture17, texture18, texture19, texture20, texture21, texture22, texture23, texture24, texture25, texture26, texture27, texture28, texture29, texture30, texture31, texture32, texture33, texture34, texture35, texture36, texture37, texture38, texture39, texture40, texture41, texture42, texture43, texture44, texture45, texture46, texture47, texture48, texture49, texture50, texture51, texture52 };
 
+		Texture score0("res/textures/score/0.png");
+		Texture score1("res/textures/score/1.png");
+		Texture score2("res/textures/score/2.png");
+		Texture score3("res/textures/score/3.png");
+		Texture score4("res/textures/score/4.png");
+		Texture score5("res/textures/score/5.png");
+		Texture score6("res/textures/score/6.png");
+		Texture score7("res/textures/score/7.png");
+		Texture score8("res/textures/score/8.png");
+		Texture score9("res/textures/score/9.png");
+		Texture score10("res/textures/score/10.png");
+		Texture score11("res/textures/score/11.png");
+		Texture score12("res/textures/score/12.png");
+		Texture score13("res/textures/score/13.png");
+		Texture score14("res/textures/score/14.png");
+		Texture score15("res/textures/score/15.png");
+		Texture score16("res/textures/score/16.png");
+		Texture score17("res/textures/score/17.png");
+		Texture score18("res/textures/score/18.png");
+		Texture score19("res/textures/score/19.png");
+		Texture score20("res/textures/score/20.png");
+		Texture score21("res/textures/score/21.png");
+		Texture score22("res/textures/score/22.png");
+		Texture score23("res/textures/score/23.png");
+		Texture score24("res/textures/score/24.png");
+		Texture score25("res/textures/score/25.png");
+		Texture score26("res/textures/score/26.png");
+	
+		Texture scoreTextureArray[27] = { score0, score1, score2, score3, score4, score5, score6, score7, score8, score9, score10, score11, score12, score13, score14, score15, score16, score17, score18, score19, score20, score21, score22, score23, score24, score25, score26};
+
+		Texture pickACard("res/textures/text/pick.png");
+		Texture ok("res/textures/text/ok.png");
+		Texture computer("res/textures/text/computer.png");
+		Texture you("res/textures/text/you.png");
+
+		Texture youWon("res/textures/text/youWon.png");
+		Texture youLost("res/textures/text/youLost.png");
+		Texture youDrew("res/textures/text/youDrew.png");
+
 		va.Unbind();
 		vb.Unbind();
 		ib.Unbind();
@@ -227,40 +291,140 @@ int main(void) {
 			float increment = 0.05f;
 
 			if (DEBUG) {
-				texture1.Bind();
+				you.Bind();
 				glm::mat4 model1 = glm::translate(glm::mat4(1.0f), translationA);
 				glm::mat4 mvp1 = proj * view * model1;
 				shader.SetUniformMat4f("u_MVP", mvp1);
 				renderer.Draw(va, ib, shader);
 
-				texture2.Bind();
+				computer.Bind();
 				glm::mat4 model2 = glm::translate(glm::mat4(1.0f), translationB);
 				glm::mat4 mvp2 = proj * view * model2;
 				shader.SetUniformMat4f("u_MVP", mvp2);
 				renderer.Draw(va, ib, shader);
 			}
 			else {
-				int counter = 0;
-				int yPos = 400;
-				int xPos = 50;
-				glm::vec3 translation(xPos, yPos, 0);
-
-				nbCardPlayerHand = 13;
-				for (int i = 0; i < nbCardPlayerHand; i++) {
-					cardTextureArray[i].Bind();
-					shader.SetUniform1i("u_Texture", 0);
-
-					if (counter % 5 == 0 && counter != 0) {
-						yPos -= 100;
-						xPos = 50;
-					}
+				if (contextNumber == 0) {
+					int counter = 0;
+					int yPos = 100;
+					int xPos = 540;
 					glm::vec3 translation(xPos, yPos, 0);
+					pickACard.Bind();
+					shader.SetUniform1i("u_Texture", 0);
 					glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
 					glm::mat4 mvp = proj * view * model;
 					shader.SetUniformMat4f("u_MVP", mvp);
 					renderer.Draw(va, ib, shader);
-					counter++;
-					xPos += 100;
+					yPos = 400;
+					xPos = 50;
+
+					for (auto it = engine.player1deck.playerDeck.begin(); it != engine.player1deck.playerDeck.end(); it++) {
+						cardTextureArray[getCardNumber(*it)].Bind();
+						shader.SetUniform1i("u_Texture", 0);
+
+						if (counter % 7 == 0 && counter != 0) {
+							yPos -= 100;
+							xPos = 50;
+						}
+						glm::vec3 translation(xPos, yPos, 0);
+						glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
+						glm::mat4 proj = glm::ortho(0.0f, 640.0f * 1.1f, 0.0f, 480.0f * 1.1f, -1.0f, 1.0f);
+						glm::mat4 mvp = proj * view * model;
+						shader.SetUniformMat4f("u_MVP", mvp);
+						renderer.Draw(va, ib, shader);
+						counter++;
+						xPos += 100;
+					}
+				}
+				else if (contextNumber == 1) {
+					{
+						you.Bind();
+						shader.SetUniform1i("u_Texture", 0);
+						glm::vec3 translation(200, 400, 0);
+						glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
+						glm::mat4 proj = glm::ortho(0.0f, 640.0f, 0.0f, 480.0f, -1.0f, 1.0f);
+						glm::mat4 mvp = proj * view * model;
+						shader.SetUniformMat4f("u_MVP", mvp);
+						renderer.Draw(va, ib, shader);
+					}
+					{
+						cardTextureArray[getCardNumber(chosenPlayerCard)].Bind();
+						shader.SetUniform1i("u_Texture", 0);
+						glm::vec3 translation(200, 300, 0);
+						glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
+						glm::mat4 proj = glm::ortho(0.0f, 640.0f, 0.0f, 480.0f, -1.0f, 1.0f);
+						glm::mat4 mvp = proj * view * model;
+						shader.SetUniformMat4f("u_MVP", mvp);
+						renderer.Draw(va, ib, shader);
+					}
+					{
+						scoreTextureArray[engine.player1Score].Bind();
+						shader.SetUniform1i("u_Texture", 0);
+						glm::vec3 translation(200, 200, 0);
+						glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
+						glm::mat4 proj = glm::ortho(0.0f, 640.0f, 0.0f, 480.0f, -1.0f, 1.0f);
+						glm::mat4 mvp = proj * view * model;
+						shader.SetUniformMat4f("u_MVP", mvp);
+						renderer.Draw(va, ib, shader);
+					}
+					{
+						computer.Bind();
+						shader.SetUniform1i("u_Texture", 0);
+						glm::vec3 translation(400, 400, 0);
+						glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
+						glm::mat4 proj = glm::ortho(0.0f, 640.0f, 0.0f, 480.0f, -1.0f, 1.0f);
+						glm::mat4 mvp = proj * view * model;
+						shader.SetUniformMat4f("u_MVP", mvp);
+						renderer.Draw(va, ib, shader);
+					}
+					{
+						cardTextureArray[getCardNumber(chosenComputerCard)].Bind();
+						shader.SetUniform1i("u_Texture", 0);
+						glm::vec3 translation(400, 300, 0);
+						glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
+						glm::mat4 proj = glm::ortho(0.0f, 640.0f, 0.0f, 480.0f, -1.0f, 1.0f);
+						glm::mat4 mvp = proj * view * model;
+						shader.SetUniformMat4f("u_MVP", mvp);
+						renderer.Draw(va, ib, shader);
+					}
+					{
+						scoreTextureArray[engine.player2Score].Bind();
+						shader.SetUniform1i("u_Texture", 0);
+						glm::vec3 translation(400, 200, 0);
+						glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
+						glm::mat4 proj = glm::ortho(0.0f, 640.0f, 0.0f, 480.0f, -1.0f, 1.0f);
+						glm::mat4 mvp = proj * view * model;
+						shader.SetUniformMat4f("u_MVP", mvp);
+						renderer.Draw(va, ib, shader);
+					}
+					{
+						ok.Bind();
+						shader.SetUniform1i("u_Texture", 0);
+						glm::vec3 translation(500, 200, 0);
+						glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
+						glm::mat4 proj = glm::ortho(0.0f, 640.0f, 0.0f, 480.0f, -1.0f, 1.0f);
+						glm::mat4 mvp = proj * view * model;
+						shader.SetUniformMat4f("u_MVP", mvp);
+						renderer.Draw(va, ib, shader);
+					}
+				}
+				else if (contextNumber == 2) {
+					if (engine.player1Score > engine.player2Score) {
+						youWon.Bind();
+					}
+					else if (engine.player1Score < engine.player2Score) {
+						youLost.Bind();
+					}
+					else if (engine.player1Score == engine.player2Score) {
+						youDrew.Bind();
+					}
+					shader.SetUniform1i("u_Texture", 0);
+					glm::vec3 translation(500, 200, 0);
+					glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
+					glm::mat4 proj = glm::ortho(0.0f, 640.0f, 0.0f, 480.0f, -1.0f, 1.0f);
+					glm::mat4 mvp = proj * view * model;
+					shader.SetUniformMat4f("u_MVP", mvp);
+					renderer.Draw(va, ib, shader);
 				}
 			}
 
@@ -292,13 +456,13 @@ int main(void) {
 
 int getCardNumber(Card card) {
 	int factor = 0;
-	if (card.suit == "Clubs") {
+	if (card.suit == "Club") {
 		factor = 1;
 	}
-	else if (card.suit == "Spades") {
+	else if (card.suit == "Spade") {
 		factor = 2;
 	}
-	else if (card.suit == "Diamonds") {
+	else if (card.suit == "Diamond") {
 		factor = 3;
 	}
 	int number = 1;
@@ -342,17 +506,36 @@ int getCardNumber(Card card) {
 }
 
 int getCardIndex(tuple<double, double> mouseClickPosition) {
-	//if (get<0>(mousePositionClick) >= 25 && get<0>(mousePositionClick) <= (((nbCardPlayerHand/5) + 1) * 100) + 25) && get<0>
-	int x = 0;
-	int y = 0;
-	if (get<1>(mousePositionClick) >= 125 && get<1>(mousePositionClick) <= 225) {
-		y = 1;
-	}
-	else if (get<1>(mousePositionClick) >= 225 && get<1>(mousePositionClick) <= 325) {
-		y = 2;
-	}
+	if (contextNumber == 0) {
+		int x = 0;
+		int y = 0;
+		if (get<1>(mousePositionClick) >= 90 && get<1>(mousePositionClick) < 160) {
+			y = 0;
+		}
+		else if (get<1>(mousePositionClick) >= 160 && get<1>(mousePositionClick) < 250) {
+			y = 1;
+		}
+		else if (get<1>(mousePositionClick) >= 250 && get<1>(mousePositionClick) < 340) {
+			y = 2;
+		}
+		else if (get<1>(mousePositionClick) >= 340 && get<1>(mousePositionClick) < 430) {
+			y = 3;
+		}
+		else {
+			y = 4;
+		}
 
-	x = get<0>(mousePositionClick) / 100;
+		x = get<0>(mousePositionClick) / 90;
 
-	return 5 * y + x;
+		return 7 * y + x;
+	}
+	else if (contextNumber == 1) {
+		if (get<0>(mousePositionClick) >= 460 && get<0>(mousePositionClick) <= 540 && get<1>(mousePositionClick) >= 240 && get<1>(mousePositionClick) <= 320) {
+			return 30;
+		}
+		return 0;
+	}
+	else {
+		return 1;
+	}
 }
