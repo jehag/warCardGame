@@ -22,9 +22,13 @@ tuple<double, double> mousePositionClick;
 bool inWindow = false;
 bool DEBUG = false;
 bool contextChange = true;
+int nbCardPlayerHand = 13;
 //list<string> names = {"2_of_clubs", "2_of_diamonds", "2_of_hearts", "2_of_clubs", "2_of_diamonds", "2_of_hearts", "2_of_clubs", "2_of_diamonds", "2_of_hearts", "2_of_clubs", "2_of_diamonds", "2_of_hearts", "2_of_clubs"};
 //list<Texture> textures = {};
 //list<string> names = { "2_of_clubs", "3_of_clubs", "4_of_clubs", "5_of_clubs", "6_of_clubs", "7_of_clubs", "8_of_clubs", "9_of_clubs", "10_of_clubs" };
+
+int getCardIndex(tuple<double, double> mousePos);
+int getCardNumber(Card card);
 
 static void cursorPositionCallback(GLFWwindow* window, double xpos, double ypos) {
 	mousePositionClick = make_tuple(xpos, ypos);
@@ -34,9 +38,12 @@ void cursorEnterCallback(GLFWwindow* window, int entered) {
 }
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 	if (inWindow && button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-		cout << get<0>(mousePositionClick) << " " << get<1>(mousePositionClick) << endl;
+		int cardIndex = getCardIndex(mousePositionClick);
+		//cout << get<0>(mousePositionClick) << " " << get<1>(mousePositionClick) << endl;
+		cout << cardIndex << endl;
 	}
 }
+
 int main(void) {
 	GLFWwindow* window;
 
@@ -129,8 +136,6 @@ int main(void) {
 		shader.SetUniform4f("u_Color", 0.8f, 0.4f, 0.8f, 1.0f);
 		/*shader.SetUniformMat4f("u_MVP", mvp);*/
 
-		
-
 		Texture texture1("res/textures/cards/ace_of_hearts.png");
 		Texture texture2("res/textures/cards/2_of_hearts.png");
 		Texture texture3("res/textures/cards/3_of_hearts.png");
@@ -204,14 +209,6 @@ int main(void) {
 
 		glm::vec3 translationA(50, 200, 0);
 		glm::vec3 translationB(150, 200, 0);
-		glm::vec3 translationC(250, 200, 0);
-		glm::vec3 translationD(350, 200, 0);
-		glm::vec3 translationE(450, 200, 0);
-		glm::vec3 translationF(550, 200, 0);
-		glm::vec3 translationG(50, 100, 0);
-		glm::vec3 translationH(150, 100, 0);
-		glm::vec3 translationI(250, 100, 0);
-
 
 		float r = 0.0f;
 		float increment = 0.05f;
@@ -226,208 +223,46 @@ int main(void) {
 
 			shader.Bind();
 
-			//Shader shader("res/shaders/Basic.shader");
-			//shader.Bind();
-			//shader.SetUniform4f("u_Color", 0.8f, 0.4f, 0.8f, 1.0f);
-
-			//Texture texture("res/textures/cards/jack_of_hearts.png");
-			//texture.Bind();
-			//shader.SetUniform1i("u_Texture", 0);
-
-			/*va.Unbind();
-			vb.Unbind();
-			ib.Unbind();
-			shader.Unbind();
-			*/
-			//Renderer renderer;
-
-			glm::vec3 translationA(200, 200, 0);
-			glm::vec3 translationB(400, 200, 0);
-
 			float r = 0.0f;
 			float increment = 0.05f;
-			
-			
-			int counter = 0;
-			int yPos = 400;
-			int xPos = 50;
-			glm::vec3 translation(xPos, yPos, 0);
 
-			//if (contextChange) {
-			//	//for (auto it = names.begin(); it != names.end(); it++) {
-			//	//	string path = "res/textures/cards/";
-			//	//	path = path + *it;
-			//	//	path = path + ".png";
-			//	//	Texture texture(path);
-			//	//	textures.push_back(texture);
-			//	//}
-			//	Texture texture("res/textures/cards/jack_of_hearts.png");
-			//	textures.push_back(texture);
-			//	contextChange = false;
-			//}
-			//unsigned int textureNum = 0;
-			
-			//for (auto it = textures.begin(); it != textures.end(); it++) {
-			int nbCardPlayerHand = 13;
-			for (int i = 0; i < nbCardPlayerHand; i++) {
-				//string path = "res/textures/cards/";
-				//path = path + *it;
-				//path = path + ".png";
-
-
-				//Shader shader("res/shaders/Basic.shader");
-				//shader.Bind();
-				//shader.SetUniform4f("u_Color", 0.8f, 0.4f, 0.8f, 1.0f);
-
-				//Texture texture("res/textures/cards/jack_of_hearts.png");
-				//texture.Bind();
-				//shader.SetUniform1i("u_Texture", 0);
-
-				//va.Unbind();
-				//vb.Unbind();
-				//ib.Unbind();
-				//shader.Unbind();
-
-				//Renderer renderer;
-
-				//glm::vec3 translationA(200, 200, 0);
-				//glm::vec3 translationB(400, 200, 0);
-
-				//cout << path << endl;
-
-				//Texture texture(path);
-				//texture.Bind();
-				////shader.Bind();
-				//shader.SetUniform1i("u_Texture", 0);
-				//it->second.Bind();
-				cardTextureArray[i].Bind();
-				//texture1.Bind();
-				shader.SetUniform1i("u_Texture", 0);
-				//textureNum++;
-
-
-				if (counter % 5 == 0 && counter != 0) {
-					yPos -= 100;
-					xPos = 50;
-				}
-				glm::vec3 translation(xPos, yPos, 0);
-				glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
-				glm::mat4 mvp = proj * view * model;
-
-				//shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
-				shader.SetUniformMat4f("u_MVP", mvp);
-				renderer.Draw(va, ib, shader);
-				counter++;
-				xPos += 100;
-				//renderer.Clear();
-			}
-			
-			/*
-			{
+			if (DEBUG) {
 				texture1.Bind();
-				//shader.SetUniform1i("u_Texture", 0);
-				glm::mat4 model = glm::translate(glm::mat4(1.0f), translationA);
-				glm::mat4 mvp = proj * view * model;
-
-				//shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
-				shader.SetUniformMat4f("u_MVP", mvp);
+				glm::mat4 model1 = glm::translate(glm::mat4(1.0f), translationA);
+				glm::mat4 mvp1 = proj * view * model1;
+				shader.SetUniformMat4f("u_MVP", mvp1);
 				renderer.Draw(va, ib, shader);
-			}
 
-			{
 				texture2.Bind();
-				//shader.SetUniform1i("u_Texture", 0);
-				glm::mat4 model = glm::translate(glm::mat4(1.0f), translationB);
-				glm::mat4 mvp = proj * view * model;
-
-				//shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
-				shader.SetUniformMat4f("u_MVP", mvp);
+				glm::mat4 model2 = glm::translate(glm::mat4(1.0f), translationB);
+				glm::mat4 mvp2 = proj * view * model2;
+				shader.SetUniformMat4f("u_MVP", mvp2);
 				renderer.Draw(va, ib, shader);
 			}
+			else {
+				int counter = 0;
+				int yPos = 400;
+				int xPos = 50;
+				glm::vec3 translation(xPos, yPos, 0);
 
-			{
-				texture3.Bind();
-				//shader.SetUniform1i("u_Texture", 0);
-				glm::mat4 model = glm::translate(glm::mat4(1.0f), translationC);
-				glm::mat4 mvp = proj * view * model;
+				nbCardPlayerHand = 13;
+				for (int i = 0; i < nbCardPlayerHand; i++) {
+					cardTextureArray[i].Bind();
+					shader.SetUniform1i("u_Texture", 0);
 
-				//shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
-				shader.SetUniformMat4f("u_MVP", mvp);
-				renderer.Draw(va, ib, shader);
+					if (counter % 5 == 0 && counter != 0) {
+						yPos -= 100;
+						xPos = 50;
+					}
+					glm::vec3 translation(xPos, yPos, 0);
+					glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
+					glm::mat4 mvp = proj * view * model;
+					shader.SetUniformMat4f("u_MVP", mvp);
+					renderer.Draw(va, ib, shader);
+					counter++;
+					xPos += 100;
+				}
 			}
-
-			{
-				texture4.Bind();
-				//shader.SetUniform1i("u_Texture", 0);
-				glm::mat4 model = glm::translate(glm::mat4(1.0f), translationD);
-				glm::mat4 mvp = proj * view * model;
-
-				//shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
-				shader.SetUniformMat4f("u_MVP", mvp);
-				renderer.Draw(va, ib, shader);
-			}
-
-			{
-				texture5.Bind();
-				//shader.SetUniform1i("u_Texture", 0);
-				glm::mat4 model = glm::translate(glm::mat4(1.0f), translationE);
-				glm::mat4 mvp = proj * view * model;
-
-				//shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
-				shader.SetUniformMat4f("u_MVP", mvp);
-				renderer.Draw(va, ib, shader);
-			}
-
-			{
-				texture6.Bind();
-				//shader.SetUniform1i("u_Texture", 0);
-				glm::mat4 model = glm::translate(glm::mat4(1.0f), translationF);
-				glm::mat4 mvp = proj * view * model;
-
-				//shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
-				shader.SetUniformMat4f("u_MVP", mvp);
-				renderer.Draw(va, ib, shader);
-			}
-
-			{
-				texture7.Bind();
-				//shader.SetUniform1i("u_Texture", 0);
-				glm::mat4 model = glm::translate(glm::mat4(1.0f), translationG);
-				glm::mat4 mvp = proj * view * model;
-
-				//shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
-				shader.SetUniformMat4f("u_MVP", mvp);
-				renderer.Draw(va, ib, shader);
-			}
-
-			{
-				texture8.Bind();
-				//shader.SetUniform1i("u_Texture", 0);
-				glm::mat4 model = glm::translate(glm::mat4(1.0f), translationH);
-				glm::mat4 mvp = proj * view * model;
-
-				//shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
-				shader.SetUniformMat4f("u_MVP", mvp);
-				renderer.Draw(va, ib, shader);
-			}
-
-			{
-				texture9.Bind();
-				//shader.SetUniform1i("u_Texture", 0);
-				glm::mat4 model = glm::translate(glm::mat4(1.0f), translationI);
-				glm::mat4 mvp = proj * view * model;
-
-				//shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
-				shader.SetUniformMat4f("u_MVP", mvp);
-				renderer.Draw(va, ib, shader);
-			}			
-			
-			if (r > 1.0f)
-				increment = -0.05f;
-			else if (r < 0.0f)
-				increment = 0.05f;
-
-			r += increment;
 
 			if (DEBUG) {
 				{
@@ -439,7 +274,7 @@ int main(void) {
 				ImGui::Render();
 				ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
 			}
-			*/
+			
 			///* Swap front and back buffers */
 			glfwSwapBuffers(window);
 
@@ -504,4 +339,20 @@ int getCardNumber(Card card) {
 		number = 13;
 	}
 	return 13 * factor + number - 1;
+}
+
+int getCardIndex(tuple<double, double> mouseClickPosition) {
+	//if (get<0>(mousePositionClick) >= 25 && get<0>(mousePositionClick) <= (((nbCardPlayerHand/5) + 1) * 100) + 25) && get<0>
+	int x = 0;
+	int y = 0;
+	if (get<1>(mousePositionClick) >= 125 && get<1>(mousePositionClick) <= 225) {
+		y = 1;
+	}
+	else if (get<1>(mousePositionClick) >= 225 && get<1>(mousePositionClick) <= 325) {
+		y = 2;
+	}
+
+	x = get<0>(mousePositionClick) / 100;
+
+	return 5 * y + x;
 }
